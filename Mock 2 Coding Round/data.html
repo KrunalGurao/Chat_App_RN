@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data</title>
+</head>
+<body>
+    <section>
+        <div id="main">
+            <select name="sort" id="sort">
+                <option value="">Sort by age</option>
+                <option value="high">High to low</option>
+                <option value="low">Low to high</option>
+            </select>
+            <select name="filer" id="filer">
+                <option value="">filter by profession</option>
+                <option value="FSD">FSD</option>
+                <option value="frontend">Frontend</option>
+                <option value="backend">Backend</option>
+            </select>
+
+            <input type="text" name="search" id="search" placeholder="search">
+            <div id="append">
+                <div id="cards">
+
+                </div>
+                <button class="pagi-btn">NEXT</button>
+                    <button class="delete">DELETE</button>
+                <div id="btn">
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+<script>
+    let appendmain= document.getElementById("cards")
+    let btnel = document.getElementById("btn")
+
+
+    async function fetchandDisplay(page=1)
+    {
+        let res= await fetch(`http://localhost:3000/user?_limit=5&_page=${page}`,{
+            headers:{
+                "Content-Type": "application/json",
+                "Authorization":`Bearer ${localStorage.getItem("token")}`
+            }
+        })
+        let totalcount= res.headers.get("X-Total-Count")
+        let totalpage= Math.ceil(totalcount/5)
+        let data= await res.json()
+        console.log(data)
+        console.log(totalpage,totalcount)
+        pagination(totalpage)
+        appendData(data)
+        detelebtn()
+    }
+    fetchandDisplay()
+    function appendData(arr)
+    {
+        appendmain.innerHTML=""
+        appendmain.innerHTML +=`
+        ${arr.map((ele)=>(
+`
+<div data-id=${ele.id} class'carding'>
+    <img src= 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqJqdH6cMXt8kM2fJvK4OrSSGELpXJXqZR8g&usqp=CAU'
+    alt=img>
+    <h2>${ele.name}</h2>
+<h2>${ele.age}</h2>
+<h2>${ele.place}</h2>
+<p>${ele.batch}</p>
+<p>${ele.profession}</p>
+<button dtat-id='${ele.id}' class="edit">EDIT</button>
+<button dtat-id='${ele.id}' class="edit">DELETE</button>
+    </div>
+`
+        ))}
+        `
+    }
+
+
+function pagination (page) {
+    let allbtn= []
+    for(let i=1; i<=page; i++)
+    {
+        allbtn.push(`<button data-id='${i}' class='pagi-btn'>${i}</button>`)
+    }
+    btnel.innerHTML= allbtn.join("")
+    let totalbtns= document.getElementsByClassName("pagi-btn")
+    for(let btn of totalbtns)
+    {
+        btn.addEventListener("click", (event)=>{
+            let newev = event.target.dataset.id
+            fetchandDisplay(event.target.dataset.id)
+        })
+    }
+}
+
+
+function detelebtn(){
+    let allbtn=document.getElementsByClassName("delete")
+    for(let btn of allbtn)
+    {
+        btn.addEventListener("click", (e)=>{
+            fetch(`http://localhost:3000/user/${_id}`,{
+                method:"DELETE",
+                headers:{
+                    "Content-Type":"application/json"
+                }
+            })
+            .then((res)=>{
+                fetchandDisplay()
+            })
+        })
+    }
+}
+
+
+</script>
