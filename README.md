@@ -1,1 +1,1 @@
-# Chat_App_RN
+# Mock 2 Coding Round (RN)
